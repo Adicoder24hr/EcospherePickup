@@ -15,6 +15,25 @@ Android is implemented with Kotlin and XML. iOS is not implemented; an iOS versi
 - Store bookings in Room and associate local records with the signed-in user.
 - Show consistent loading, success, error, and confirmation dialogs.
 
+## Screenshots
+
+The screenshots below show the main Android screens included in this project.
+
+<table>
+  <tr>
+    <td align="center"><strong>Login</strong><br><img src="docs/screenshots/login_screen.png" width="260" alt="Ecosphere login screen"></td>
+    <td align="center"><strong>Registration</strong><br><img src="docs/screenshots/registration_screen.png" width="260" alt="Ecosphere registration screen"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Dashboard</strong><br><img src="docs/screenshots/dashboard_screen.png" width="260" alt="Ecosphere dashboard"></td>
+    <td align="center"><strong>Create booking</strong><br><img src="docs/screenshots/booking_waste_pickup_screen.png" width="260" alt="Ecosphere create booking screen"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Booking history</strong><br><img src="docs/screenshots/booking_history_screen.png" width="260" alt="Ecosphere booking history"></td>
+    <td align="center"><strong>Booking details</strong><br><img src="docs/screenshots/booking_details_screen.png" width="260" alt="Ecosphere booking details"></td>
+  </tr>
+</table>
+
 ## Technology
 
 - Android: Kotlin, XML layouts, ViewBinding, Material Components, Navigation Component, MVVM, StateFlow, coroutines
@@ -140,4 +159,3 @@ Room stores each booking's full UUID, owner ID, contact and pickup details, stat
 - Accounts created with an earlier in-memory version of the backend cannot be recovered if that server process has already restarted; register those accounts again once.
 - Cleartext HTTP is enabled for local development only. Do not deploy this configuration as a public service.
 - Automated UI coverage and a published Play Store/iOS release are not included.
-- Screenshots or a demonstration video are not included; capture these from the running app for the assignment submission.
