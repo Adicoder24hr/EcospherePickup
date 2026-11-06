@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".auth.ui.LoginFragment"
+    android:background="@color/eco_background"
+    android:fillViewport="true"
+    android:scrollbars="none">
+
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="vertical"
+       android:gravity="center_horizontal"
+       android:paddingStart="28dp"
+       android:paddingEnd="28dp"
+       android:paddingTop="42dp"
+       android:paddingBottom="32dp">
+
+<!--       App Branding-->
+
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="🌿"
+           android:textSize="54sp"/>
+
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="Ecosphere"
+           android:textColor="@color/eco_dark_green"
+           android:textSize="29sp"
+           android:textStyle="bold"
+           android:layout_marginTop="4dp"/>
+
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="Welcome Back"
+           android:textColor="@color/eco_text"
+           android:textSize="25sp"
+           android:textStyle="bold"
+           android:layout_marginTop="34dp"/>
+
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="Book a pickup. Keep your city clean."
+           android:textColor="@color/eco_secondary_text"
+           android:textSize="14sp"
+           android:layout_marginTop="8dp"
+           android:layout_marginBottom="32dp" />
+
+<!--       Email/ Mobile field-->
+       <com.google.android.material.textfield.TextInputLayout
+           android:id="@+id/tilEmailOrMobile"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           style="@style/ThemeOverlay.Material3.TextInputEditText.OutlinedBox"
+           android:hint="Email or Mobile Number"
+           app:boxStrokeColor="@color/eco_green"
+           app:boxCornerRadiusTopStart="12dp"
+           app:boxCornerRadiusTopEnd="12dp"
+           app:boxCornerRadiusBottomStart="12dp"
+           app:boxCornerRadiusBottomEnd="12dp">
+
+           <com.google.android.material.textfield.TextInputEditText
+               android:id="@+id/etEmailOrMobile"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:inputType="text"
+               android:singleLine="true"
+               android:textColor="@color/eco_text"/>
+
+       </com.google.android.material.textfield.TextInputLayout>
+
+       <!-- Password -->
+       <com.google.android.material.textfield.TextInputLayout
+           android:id="@+id/tilPassword"
+           style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:hint="Password"
+           android:layout_marginTop="18dp"
+           app:endIconMode="password_toggle"
+           app:boxStrokeColor="@color/eco_green"
+           app:boxCornerRadiusTopStart="12dp"
+           app:boxCornerRadiusTopEnd="12dp"
+           app:boxCornerRadiusBottomStart="12dp"
+           app:boxCornerRadiusBottomEnd="12dp">
+
+           <com.google.android.material.textfield.TextInputEditText
+               android:id="@+id/etPassword"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:inputType="textPassword"
+               android:singleLine="true"
+               android:textColor="@color/eco_text" />
+
+       </com.google.android.material.textfield.TextInputLayout>
+
+       <!-- Forgot password -->
+       <TextView
+           android:id="@+id/tvForgotPassword"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="Forgot password?"
+           android:textColor="@color/eco_green"
+           android:textStyle="bold"
+           android:textSize="14sp"
+           android:layout_gravity="end"
+           android:layout_marginTop="16dp"
+           android:padding="4dp" />
+
+       <!-- Login button -->
+       <com.google.android.material.button.MaterialButton
+           android:id="@+id/btnLogin"
+           android:layout_width="match_parent"
+           android:layout_height="56dp"
+           android:text="Login"
+           android:textAllCaps="false"
+           android:textSize="16sp"
+           android:textStyle="bold"
+           android:textColor="@android:color/white"
+           android:backgroundTint="@color/eco_green"
+           app:cornerRadius="12dp"
+           android:layout_marginTop="28dp" />
+
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="OR"
+           android:textColor="@color/eco_secondary_text"
+           android:textSize="13sp"
+           android:layout_marginTop="24dp" />
+
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:orientation="horizontal"
+           android:gravity="center"
+           android:layout_marginTop="18dp">
+
+           <TextView
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="New to Ecosphere?"
+               android:textColor="@color/eco_text"
+               android:layout_marginEnd="10dp"
+               android:textSize="14sp"/>
+
+           <TextView
+               android:id="@+id/tvCreateAccount"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="Create account"
+               android:textColor="@color/eco_green"
+               android:textStyle="bold"
+               android:textSize="14sp"
+               android:clickable="true"
+               android:focusable="true"/>
+
+       </LinearLayout>
+
+   </LinearLayout>
+
+
+</ScrollView>

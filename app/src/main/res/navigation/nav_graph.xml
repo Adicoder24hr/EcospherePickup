@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+
+    <!-- LOGIN -->
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.ecosphere.wastepickup.auth.ui.LoginFragment"
+        android:label="Login">
+
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment"/>
+
+        <action
+            android:id="@+id/action_loginFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
+
+    <!-- REGISTER -->
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.ecosphere.wastepickup.auth.ui.RegisterFragment"
+        android:label="Register"/>
+
+    <!-- HOME -->
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.ecosphere.wastepickup.home.ui.HomeFragment"
+        android:label="Home">
+
+        <action
+            android:id="@+id/action_homeFragment_to_createBookingFragment"
+            app:destination="@id/createBookingFragment"/>
+
+        <action
+            android:id="@+id/action_homeFragment_to_bookingHistoryFragment"
+            app:destination="@id/bookingHistoryFragment"/>
+
+        <action
+            android:id="@+id/action_homeFragment_to_bookingDetailsFragment"
+            app:destination="@id/bookingDetailsFragment"/>
+
+        <action
+            android:id="@+id/action_homeFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
+
+    <!-- CREATE BOOKING -->
+    <fragment
+        android:id="@+id/createBookingFragment"
+        android:name="com.ecosphere.wastepickup.booking.ui.create.CreateBookingFragment"
+        android:label="Create Booking"/>
+
+    <!-- BOOKING HISTORY -->
+    <fragment
+        android:id="@+id/bookingHistoryFragment"
+        android:name="com.ecosphere.wastepickup.booking.ui.history.BookingHistoryFragment"
+        android:label="Booking History">
+
+        <action
+            android:id="@+id/action_bookingHistoryFragment_to_bookingDetailsFragment"
+            app:destination="@id/bookingDetailsFragment"/>
+    </fragment>
+
+    <!-- BOOKING DETAILS -->
+    <fragment
+        android:id="@+id/bookingDetailsFragment"
+        android:name="com.ecosphere.wastepickup.booking.ui.details.BookingDetailsFragment"
+        android:label="Booking Details">
+
+        <argument
+            android:name="bookingId"
+            app:argType="string"/>
+    </fragment>
+
+</navigation>

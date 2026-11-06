@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipeRefresh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/eco_background">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/screen_horizontal_padding"
+            android:paddingTop="8dp"
+            android:paddingEnd="@dimen/screen_horizontal_padding"
+            android:paddingBottom="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Navigate back"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_back"
+                    android:tint="@color/eco_dark_green" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="Booking Details"
+                    android:textColor="@color/eco_text"
+                    android:textSize="21sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="@dimen/content_card_radius"
+                app:cardElevation="2dp"
+                app:strokeColor="@color/eco_border"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/content_card_padding">
+
+                    <FrameLayout
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="@drawable/bg_category_icon">
+
+                        <ImageView
+                            android:id="@+id/ivCategoryIcon"
+                            android:layout_width="34dp"
+                            android:layout_height="34dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="Waste category"
+                            android:src="@drawable/ic_recycling"
+                            android:tint="@color/eco_dark_green" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="BOOKING REFERENCE"
+                            android:textColor="@color/eco_secondary_text"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvBookingId"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:textColor="@color/eco_dark_green"
+                            android:textSize="19sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvSummaryCategory"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:textColor="@color/eco_text"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tvStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="9dp"
+                            android:background="@drawable/bg_status_chip"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="5dp"
+                            android:text="Pending"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardProgress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/section_spacing"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="@dimen/content_card_radius"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/eco_border"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/content_card_padding">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Booking progress"
+                        android:textColor="@color/eco_text"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView android:id="@+id/stepPendingIcon" style="@style/EcosphereProgressStep" android:text="1" />
+                            <TextView android:id="@+id/stepPendingLabel" style="@style/EcosphereProgressLabel" android:text="Pending" />
+                        </LinearLayout>
+
+                        <View android:id="@+id/progressLineOne" android:layout_width="0dp" android:layout_height="2dp" android:layout_weight="1" android:layout_marginBottom="18dp" android:background="@color/eco_border" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView android:id="@+id/stepConfirmedIcon" style="@style/EcosphereProgressStep" android:text="2" />
+                            <TextView android:id="@+id/stepConfirmedLabel" style="@style/EcosphereProgressLabel" android:text="Confirmed" />
+                        </LinearLayout>
+
+                        <View android:id="@+id/progressLineTwo" android:layout_width="0dp" android:layout_height="2dp" android:layout_weight="1" android:layout_marginBottom="18dp" android:background="@color/eco_border" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView android:id="@+id/stepCompletedIcon" style="@style/EcosphereProgressStep" android:text="3" />
+                            <TextView android:id="@+id/stepCompletedLabel" style="@style/EcosphereProgressLabel" android:text="Completed" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardCancelled"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/section_spacing"
+                android:visibility="gone"
+                app:cardBackgroundColor="@color/status_red_bg"
+                app:cardCornerRadius="@dimen/content_card_radius"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/content_card_padding">
+                    <TextView android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_cancel_icon" android:gravity="center" android:text="×" android:textColor="@color/status_red" android:textSize="27sp" android:textStyle="bold" />
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Booking cancelled" android:textColor="@color/status_red" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:text="This pickup will not be collected." android:textColor="@color/eco_text" android:textSize="13sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/section_spacing"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="@dimen/content_card_radius"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/eco_border"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/content_card_padding">
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pickup information" android:textColor="@color/eco_text" android:textSize="16sp" android:textStyle="bold" />
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <ImageView android:layout_width="22dp" android:layout_height="22dp" android:contentDescription="Pickup date" android:src="@drawable/ic_pickup_date" />
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pickup date" android:textColor="@color/eco_secondary_text" android:textSize="12sp" />
+                            <TextView android:id="@+id/tvDate" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:textColor="@color/eco_text" android:textSize="15sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <ImageView android:layout_width="22dp" android:layout_height="22dp" android:contentDescription="Pickup time" android:src="@drawable/ic_pickup_time" />
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pickup time" android:textColor="@color/eco_secondary_text" android:textSize="12sp" />
+                            <TextView android:id="@+id/tvTime" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:textColor="@color/eco_text" android:textSize="15sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <ImageView android:layout_width="22dp" android:layout_height="22dp" android:contentDescription="Waste category" android:src="@drawable/ic_recycling" />
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Waste category" android:textColor="@color/eco_secondary_text" android:textSize="12sp" />
+                            <TextView android:id="@+id/tvCategory" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:textColor="@color/eco_text" android:textSize="15sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:gravity="top" android:orientation="horizontal">
+                        <ImageView android:layout_width="22dp" android:layout_height="22dp" android:contentDescription="Pickup address" android:src="@drawable/ic_pickup_location" />
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pickup address" android:textColor="@color/eco_secondary_text" android:textSize="12sp" />
+                            <TextView android:id="@+id/tvAddress" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:textColor="@color/eco_text" android:textSize="15sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/section_spacing"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="@dimen/content_card_radius"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/eco_border"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/content_card_padding">
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Customer information" android:textColor="@color/eco_text" android:textSize="16sp" android:textStyle="bold" />
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <ImageView android:layout_width="22dp" android:layout_height="22dp" android:contentDescription="Customer name" android:src="@drawable/ic_customer" />
+                        <TextView android:id="@+id/tvCustomerName" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:textColor="@color/eco_text" android:textSize="15sp" />
+                    </LinearLayout>
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="13dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <ImageView android:layout_width="22dp" android:layout_height="22dp" android:contentDescription="Mobile number" android:src="@drawable/ic_customer_phone" />
+                        <TextView android:id="@+id/tvMobile" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:textColor="@color/eco_text" android:textSize="15sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancelBooking"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="20dp"
+                android:backgroundTint="@color/status_red"
+                android:text="Cancel Booking"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:cornerRadius="16dp" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
