@@ -166,7 +166,7 @@ npm run smoke
 The URL is configured in [`app/src/main/java/com/ecosphere/wastepickup/core/network/ApiClient.kt`](app/src/main/java/com/ecosphere/wastepickup/core/network/ApiClient.kt). Keep the trailing `/api/` path.
 
 - Standard Android Studio emulator with a local server: `http://10.0.2.2:3000/api/`
-- Deployed backend: `https://<your-render-service>.onrender.com/api/`
+- Deployed backend: `https://ecosphere-backend-7tlm.onrender.com/api/`
 
 For independent recruiter evaluation, build the APK with the deployed HTTPS URL. Do not ship an emulator or private LAN address. After changing the URL, rebuild with `.\gradlew.bat assembleDebug`; the debug APK is at `app/build/outputs/apk/debug/app-debug.apk`.
 

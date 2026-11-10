@@ -11,7 +11,7 @@ import com.ecosphere.wastepickup.booking.remote.BookingApiService
 
 object ApiClient {
     private const val BASE_URL =
-        "http://10.0.2.2:3000/api/"
+        "https://ecosphere-backend-7tlm.onrender.com/api/"
 
     val bookingApiService: BookingApiService by lazy {
         retrofit.create(BookingApiService::class.java)
