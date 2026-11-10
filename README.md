@@ -1,6 +1,6 @@
 # Ecosphere Waste Pickup
 
-Ecosphere is an Android application for household waste pickup booking. Customers can register, book a pickup, view its status, and cancel eligible bookings. The repository contains the Android client and a Node.js backend deployed as a Render web service, with application records stored in MongoDB Atlas.
+Ecosphere is an Android application for household waste pickup booking. Customers can register, book a pickup, view its status, and cancel eligible bookings. The repository contains the Android client and a Node.js backend prepared for Render deployment, with application records stored in MongoDB Atlas.
 
 Android is implemented using Kotlin and XML. iOS is not implemented; a future iOS client could be developed using Swift and SwiftUI.
 
