@@ -1,26 +1,21 @@
 # Ecosphere Waste Pickup
 
-## 1. Project Overview
+Ecosphere is an Android application for household waste pickup booking. Customers can register, book a pickup, view its status, and cancel eligible bookings. The repository contains the Android client and a Node.js backend deployed as a Render web service, with application records stored in MongoDB Atlas.
 
-Ecosphere is an Android application for household waste pickup booking. Customers can create an account, submit pickup requests, review their bookings, and track booking status. The repository includes the Android client and an Express backend for local assignment demonstrations.
+Android is implemented using Kotlin and XML. iOS is not implemented; a future iOS client could be developed using Swift and SwiftUI.
 
-The implemented platform is Android, built with Kotlin and XML. iOS is not implemented; a future iOS client could be developed with Swift and SwiftUI.
+## Features
 
-## 2. Features
-
-- Register with a name, email, mobile number, and password; sign in with email or mobile number and password.
+- Register with a name, email, mobile number, and password; sign in with email or mobile number.
 - View customer information, booking totals, and recent bookings on the dashboard.
-- Create pickups for Plastic, Paper, E-waste, or General Waste, with an address, preferred date, and time.
-- View booking history and full booking details.
-- Track Pending, Confirmed, Completed, and Cancelled statuses. Customers can cancel eligible Pending or Confirmed bookings.
-- Pull to refresh dashboard, history, and booking details from the API.
-- Keep booking records in Room, scoped locally to the signed-in user.
-- Show loading, success, error, and cancellation confirmation states.
-- Display a readable booking reference while retaining the full UUID for navigation and API operations.
+- Create pickups for Plastic, Paper, E-waste, or General Waste.
+- Review booking history and details, and track Pending, Confirmed, Completed, and Cancelled statuses.
+- Cancel eligible Pending or Confirmed bookings.
+- Pull to refresh the dashboard, history, and booking details.
+- Cache bookings in Room on the Android device and persist backend users and bookings in MongoDB Atlas.
+- Display a readable booking reference while keeping the complete UUID for API requests and navigation.
 
-## 3. Screenshots
-
-These are the existing screenshots for the six main Android screens. Their image files and paths are preserved.
+## Screenshots
 
 <table>
   <tr>
@@ -37,208 +32,230 @@ These are the existing screenshots for the six main Android screens. Their image
   </tr>
 </table>
 
-## 4. Technology Stack
+## Technology and Architecture
 
-- Android: Kotlin, XML layouts, ViewBinding, Material Components, Navigation Component
-- Application architecture: feature-first MVVM, ViewModels, StateFlow, and coroutines
-- Networking: Retrofit, OkHttp, and Gson
-- Local booking storage: Room
-- Session token storage: Android Keystore-backed AES-GCM encryption with app-private SharedPreferences
-- Backend: Node.js, Express, JWT authentication, bcrypt password hashing, and a local JSON data file
-- Dependency wiring: manual `AppContainer` and ViewModel factories
-
-## 5. Project Requirements
-
-- Android Studio with the Android SDK required by the project (compile SDK 36) and JDK 21
-- Node.js 20 or newer and npm
-- An Android Studio emulator or a physical Android device
-- A network connection between the Android app and the backend
-
-## 6. Repository Structure
+- Android: Kotlin, XML, ViewBinding, Material Components, Navigation Component, Room, Retrofit, OkHttp, Gson, coroutines, and StateFlow.
+- Android architecture: feature-first MVVM with manual dependency injection.
+- Backend: Node.js 20+, Express 5, Mongoose, bcrypt, and JWT.
+- Database: MongoDB Atlas.
+- Hosting: Render Web Service.
+- Session token storage: Android Keystore-backed AES-GCM encryption with app-private SharedPreferences.
 
 ```text
-app/src/main/java/com/ecosphere/wastepickup/
-  auth/       Registration and login UI, ViewModels, API models, repository
-  booking/    Booking creation, history, details, shared list adapter, Room, API
-  home/       Dashboard UI and ViewModel
-  core/       Network, database, token security, manual dependency injection
-backend/     Express API and environment template
- docs/       Existing application screenshots
+Android app (Kotlin/XML, Retrofit, Room)
+                  |
+                  | HTTPS REST API
+                  v
+         Render Web Service
+          Node.js + Express
+                  |
+                  | Mongoose over TLS
+                  v
+           MongoDB Atlas
 ```
 
-## 7. Backend Setup
+Fragments render state and handle navigation. ViewModels own UI state and actions. Repositories coordinate Retrofit and Room. In the backend, Express validates requests and enforces authentication/ownership, Mongoose validates models and queries Atlas, and JSON responses keep the existing Android API contract.
 
-From the repository root, use PowerShell:
+## Prerequisites
+
+- Node.js 20 or newer and npm.
+- An Android Studio emulator/device, Android SDK 36, and JDK 21 for the Android application.
+- Access to the existing MongoDB Atlas organization, project, and cluster.
+- GitHub access to this repository and a Render account for hosting.
+
+## MongoDB Atlas Setup
+
+Use the existing Atlas cluster. Do not create another cluster for this project.
+
+1. In Atlas, choose the existing organization and project, then open **Database → Clusters** and verify the cluster is available.
+2. Open **Database → Browse Collections** (Data Explorer). Create database `ecosphere_db` with collection `users`, then add collection `bookings` to the same database. Atlas can also create collections automatically on first write.
+3. Open **Security → Database Access → Add New Database User**. Use password authentication and a dedicated username/password. Grant the built-in `readWrite` role on `ecosphere_db` only. Do not grant Atlas administration privileges or reuse the Atlas login password.
+4. Open **Security → Network Access → Add IP Address**. Add your current public IP for local development. Avoid `0.0.0.0/0`.
+5. From the existing cluster, select **Connect → Drivers → Node.js** and copy its SRV URI. Set the database path to `/ecosphere_db`. URL-encode special characters in the username/password if they appear in the URI.
+6. Keep the URI in `MONGODB_URI` in the local ignored `.env` file and in Render's secret environment-variable settings. Never put it in source code, README examples, Android resources, or Git.
+
+### Atlas access from Render
+
+Render outbound addresses depend on the service's region. After creating the Render service, open its service details, select **Connect → Outbound**, and copy the listed CIDR ranges. Add the applicable ranges under **Atlas → Security → Network Access**. Do not assume one IP address is sufficient and do not permanently allow all IPs. Render's dedicated outbound IP sets are an optional paid workspace feature; this project does not require purchasing one.
+
+## Database Structure
+
+The database is `ecosphere_db`; Mongoose uses the collections `users` and `bookings`. MongoDB's internal `_id` is not exposed by the API. The existing UUID strings remain the API IDs.
+
+### `users`
+
+| Field | Type | Rules / purpose |
+|---|---|---|
+| `id` | String | Required unique UUID used in JWT subjects and booking ownership |
+| `name` | String | Required, minimum two characters |
+| `email` | String | Required, trimmed, lowercase, unique |
+| `mobile` | String | Required, unique |
+| `passwordHash` | String | Required bcrypt hash; never returned by API |
+
+Unique indexes enforce `id`, `email`, and `mobile` uniqueness.
+
+### `bookings`
+
+| Field | Type | Rules / purpose |
+|---|---|---|
+| `id` | String | Required unique booking UUID; retained for frontend compatibility |
+| `userId` | String | Required reference to `users.id`; ownership is checked on customer routes |
+| `customerName`, `mobile`, `address` | String | Required pickup contact and location fields |
+| `category` | String | `Plastic`, `Paper`, `E-waste`, or `General Waste` |
+| `pickupDate`, `pickupTime` | String | Required preferred pickup values |
+| `status` | String | `Pending`, `Confirmed`, `Completed`, or `Cancelled`; defaults to `Pending` |
+| `createdAt` | String | Required ISO-8601 timestamp, used for newest-first sorting |
+
+Indexes enforce unique booking UUIDs and support owner-scoped, newest-first listing (`userId`, `createdAt`). The `userId` relation intentionally remains a UUID string, matching existing tokens and API payloads.
+
+## Local Backend Development
+
+From PowerShell:
 
 ```powershell
 cd backend
-npm install
+npm ci
 Copy-Item .env.example .env
 notepad .env
 ```
 
-Set separate private values for `JWT_SECRET` and `ADMIN_API_KEY`. `JWT_SECRET` signs and verifies customer session tokens. `ADMIN_API_KEY` authorizes operator booking status changes. Use placeholders only in documentation; do not share or commit real values.
+Set private values for:
 
-Start the backend and leave the terminal open:
+```dotenv
+PORT=3000
+MONGODB_URI=mongodb+srv://<username>:<password>@<cluster-host>/ecosphere_db?retryWrites=true&w=majority
+JWT_SECRET=<long-random-secret>
+ADMIN_API_KEY=<different-long-random-secret>
+```
+
+Do not paste real values into chat or commit `.env`. `MONGO_URI` is accepted as a local compatibility alias, but use `MONGODB_URI` for new configuration. Start the backend:
 
 ```powershell
 npm start
 ```
 
-The server listens on port 3000 and binds to all network interfaces. Check its health endpoint from another terminal:
+Check readiness, including the database connection:
 
 ```powershell
-Invoke-RestMethod http://localhost:3000/api/health
+Invoke-RestMethod http://localhost:3000/health
 ```
 
-The backend loads and saves users and bookings as JSON in `backend/data/store.json` by default. Set `ECOSPHERE_DATA_FILE` to use a different path. Writes use a temporary file followed by a rename. Passwords are stored as bcrypt hashes. This local JSON store is intended for the assignment demonstration, not production or multi-instance deployment.
+`GET /health/live` checks only that the process is running. `GET /health` and the retained `GET /api/health` report readiness and return HTTP 503 if MongoDB is disconnected. The server does not start accepting requests if the initial database connection fails.
 
-The backend ignores `.env`, `data/`, and `node_modules/`. Keep `.env` and generated private data files out of Git.
+### Importing the existing local JSON data
 
-## 8. API Base URL Configuration
-
-The API URL is configured in [`app/src/main/java/com/ecosphere/wastepickup/core/network/ApiClient.kt`](app/src/main/java/com/ecosphere/wastepickup/core/network/ApiClient.kt), in the `BASE_URL` constant. Keep the trailing `/api/` path.
-
-**Android Studio emulator:** use:
-
-```text
-http://10.0.2.2:3000/api/
-```
-
-`10.0.2.2` is a special address used by the standard Android Studio emulator to reach the development computer. It is not the computer's LAN IP address.
-
-**Physical Android device:**
-
-1. Connect the phone and development computer to the same Wi-Fi network.
-2. On Windows, run `ipconfig` in PowerShell or Command Prompt.
-3. Find the active network adapter and its IPv4 address.
-4. Replace `10.0.2.2` in `ApiClient.kt` with that reachable LAN address, keeping the port and `/api/` suffix. For example:
-
-   ```text
-   http://192.168.1.8:3000/api/
-   ```
-
-   This is only an example; use the computer's own reachable IPv4 address. Do not publish a private LAN address in a shared README or APK instructions.
-
-The backend must be running on port 3000 and accept connections from the phone. Allow incoming connections on port 3000 through Windows Firewall if required. From the phone's browser, check:
-
-```text
-http://YOUR_COMPUTER_IP:3000/api/health
-```
-
-A private address such as `192.168.x.x` works only while the phone can reach the computer on that network and the backend is running. An APK configured with a developer's private LAN address will not work for an evaluator on an unrelated network. Independent remote evaluation requires deploying the backend to publicly accessible hosting with HTTPS, then rebuilding the APK with that deployed API URL.
-
-## 9. Running the Android Application
-
-1. Start the backend as described above.
-2. Set `BASE_URL` in `ApiClient.kt` for the chosen emulator or physical device network.
-3. Open the repository root in Android Studio and allow Gradle sync to complete.
-4. Start an emulator or connect a device with USB debugging enabled, then run the `app` configuration.
-
-The app uses cleartext HTTP for local development. See [Assignment Scope and Known Limitations](#16-assignment-scope-and-known-limitations).
-
-## 10. Building the Android APK
-
-Configure the API base URL for the target environment before building. From the repository root in PowerShell, run:
+If `backend/data/store.json` contains records you want to carry over, configure `MONGODB_URI` first, then run:
 
 ```powershell
-.\gradlew.bat assembleDebug
+npm run import:json-store
 ```
 
-The debug APK is generated at:
+The importer preserves UUIDs and bcrypt password hashes. It inserts missing users/bookings, skips IDs already in Atlas, and does not overwrite Atlas records. It reports counts only, not personal information. Keep the local JSON file as a separate backup until you have verified the imported records. Do not commit that file.
 
-```text
-app/build/outputs/apk/debug/app-debug.apk
-```
-
-This debug APK is for assignment demonstration and testing, not a production Play Store release. A locally configured LAN URL will only work on a network that can reach that development computer.
-
-## 11. Typical Application Flow
-
-1. Register an account, then sign in with email or mobile number and password.
-2. Create a booking with its waste category, pickup address, date, and time.
-3. Open a booking from the dashboard or Booking History to view its details.
-4. Pull down on the Dashboard, History, or Details screen to fetch current server data.
-5. Cancel an eligible Pending or Confirmed booking from its Details screen.
-
-## 12. Booking Statuses and Operator Status Updates
-
-New bookings start as `Pending`. An operator can move a booking from `Pending` to `Confirmed`, then from `Confirmed` to `Completed`. Customers cannot set operator-controlled statuses. Eligible customers can cancel Pending or Confirmed bookings; Completed and Cancelled bookings cannot be cancelled.
-
-For a demonstration, sign in to the API to obtain the customer's booking ID (the full internal UUID):
+### Backend checks
 
 ```powershell
-$credentials = @{ emailOrMobile = "customer@example.com"; password = "<PASSWORD>" } | ConvertTo-Json
-$session = Invoke-RestMethod -Method Post -Uri "http://localhost:3000/api/auth/login" -ContentType "application/json" -Body $credentials
-$headers = @{ Authorization = "Bearer $($session.token)" }
-$bookings = Invoke-RestMethod -Method Get -Uri "http://localhost:3000/api/bookings" -Headers $headers
-$bookingId = $bookings[0].id
+npm test
+npm run smoke
 ```
 
-Use the private `ADMIN_API_KEY` from the backend `.env` file to update the status. Run the request first with `Confirmed`, then with `Completed`:
+`npm test` runs model validation tests without a database. `npm run smoke` requires a working local `.env`/Atlas connection; it exercises registration/login, booking creation/list/detail/cancellation, administrator status transitions, and reads a booking again after restarting the server. The smoke test removes only the uniquely generated records it creates.
 
-```powershell
-$adminHeaders = @{ "x-admin-api-key" = "<ADMIN_API_KEY>" }
-$body = @{ status = "Confirmed" } | ConvertTo-Json
-Invoke-RestMethod -Method Patch -Uri "http://localhost:3000/api/admin/bookings/$bookingId/status" -Headers $adminHeaders -ContentType "application/json" -Body $body
-```
+## Android API Configuration
 
-For the second transition, set `$body` to `@{ status = "Completed" } | ConvertTo-Json` and send the same request again. The endpoint rejects unsupported statuses and invalid transitions. Pull to refresh in the app to see the updated status.
+The URL is configured in [`app/src/main/java/com/ecosphere/wastepickup/core/network/ApiClient.kt`](app/src/main/java/com/ecosphere/wastepickup/core/network/ApiClient.kt). Keep the trailing `/api/` path.
 
-## 13. Architecture and Data Handling
+- Standard Android Studio emulator with a local server: `http://10.0.2.2:3000/api/`
+- Deployed backend: `https://<your-render-service>.onrender.com/api/`
 
-The Android client follows the existing feature-first structure and MVVM flow:
+For independent recruiter evaluation, build the APK with the deployed HTTPS URL. Do not ship an emulator or private LAN address. After changing the URL, rebuild with `.\gradlew.bat assembleDebug`; the debug APK is at `app/build/outputs/apk/debug/app-debug.apk`.
 
-- Fragments render UI state, collect user input, and handle navigation.
-- ViewModels own screen state, validation, and UI actions.
-- Repositories coordinate remote API calls and local Room data.
-- Retrofit declares REST endpoints; OkHttp configures the client, timeouts, and basic request/response logging; Gson parses JSON.
-- Room stores booking UUIDs, owner IDs, pickup and contact details, status, sync state, and creation time. The database includes a migration that adds the owner ID column.
-- The Android session token is encrypted using AES-GCM with a key held in Android Keystore. Encrypted token data and session profile fields are kept in app-private SharedPreferences.
+## Render Deployment
 
-The backend issues JWTs with a user ID subject. Protected booking endpoints verify the token and scope list, detail, creation, and cancellation operations to that authenticated user. The client also filters local Room records by the signed-in user ID. Operator status changes use a separate administrator API key and are not exposed as a customer action in the Android app.
+The root `render.yaml` defines one free-plan Web Service with root directory `backend`, build command `npm ci`, start command `npm start`, and health-check path `/health`. It marks secrets as unsynchronized so their values are entered privately in the Render Dashboard.
 
-The Express backend handles authentication, booking validation, ownership checks, and status transitions. It persists user and booking data in the local JSON file described above.
+1. Push the verified backend changes to the existing GitHub repository and branch.
+2. In Render, choose **New → Blueprint**, connect the existing GitHub repository, select the branch containing `render.yaml`, and review the service before applying it. Alternatively, create a Web Service and use the same settings above.
+3. Confirm the service root directory is `backend`, the runtime is Node, and the build/start commands and health path match the Blueprint. No paid plan is required by this configuration.
+4. In the service's **Environment** settings, set `MONGODB_URI`, `JWT_SECRET`, and `ADMIN_API_KEY` as secret values. Use the URI for `ecosphere_db`. Do not put these values in `render.yaml`.
+5. After the service exists, use **Connect → Outbound** to find its region-specific outbound CIDRs. Add these ranges to the Atlas IP Access List, then redeploy if the first startup failed while access was blocked.
+6. Wait until Render reports the service as Live. Open `https://<service-name>.onrender.com/health`; expect `status: ok` and `database: connected`.
+7. Enable automatic deploys from the intended Git branch if desired. Find the public API URL in the Render service overview.
 
-Booking references such as `ECO-A12B34C5` are customer-facing display values. The full UUID remains the internal database key and is used for API requests and navigation.
+Render service setup, secret entry, and production verification must be completed in the Render Dashboard. Do not claim deployment is complete based only on the presence of `render.yaml` or a successful GitHub push.
 
-## 14. API Endpoints
+## API Documentation
 
-All routes are relative to `http://HOST:3000/api/`. Customer booking routes require `Authorization: Bearer <JWT>`. The operator status route requires the `x-admin-api-key` header; it does not use a customer JWT.
+All customer routes are relative to `/api/`. Customer routes marked **JWT** require `Authorization: Bearer <token>`. IDs in requests/responses remain the complete UUID strings.
 
-| Method | Route | Authentication | Purpose |
+| Method | Endpoint | Auth | Purpose / request |
 |---|---|---|---|
-| `GET` | `/health` | None | Check backend availability |
-| `POST` | `/auth/register` | None | Register a customer |
-| `POST` | `/auth/login` | None | Sign in and receive a JWT |
-| `POST` | `/bookings` | Customer JWT | Create an authenticated user's booking |
-| `GET` | `/bookings` | Customer JWT | List the authenticated user's bookings |
-| `GET` | `/bookings/:id` | Customer JWT | Get one of the authenticated user's bookings |
-| `PATCH` | `/bookings/:id/cancel` | Customer JWT | Cancel an eligible booking owned by the user |
-| `PATCH` | `/admin/bookings/:id/status` | `x-admin-api-key` | Operator status transition to Confirmed or Completed |
+| `GET` | `/health/live` | None | Process liveness |
+| `GET` | `/health` | None | Service and MongoDB readiness |
+| `GET` | `/api/health` | None | Backward-compatible readiness endpoint |
+| `POST` | `/api/auth/register` | None | `{ "name", "email", "mobile", "password" }`; returns `{ message, user, token }` |
+| `POST` | `/api/auth/login` | None | `{ "emailOrMobile", "password" }`; returns `{ message, user, token }` |
+| `POST` | `/api/bookings` | JWT | `{ "id?", "customerName", "mobile", "category", "address", "pickupDate", "pickupTime" }`; returns booking directly |
+| `GET` | `/api/bookings` | JWT | List the signed-in customer's bookings, newest first |
+| `GET` | `/api/bookings/:id` | JWT | Read one booking owned by the signed-in customer |
+| `PATCH` | `/api/bookings/:id/cancel` | JWT | Cancel an owned Pending or Confirmed booking; returns booking directly |
+| `PATCH` | `/api/admin/bookings/:id/status` | `x-admin-api-key` | `{ "status": "Confirmed" }` or `{ "status": "Completed" }`; returns booking directly |
 
-## 15. Troubleshooting
+Common errors: HTTP 400 for invalid input/status or an ineligible cancellation; 401 for invalid credentials/token/admin key; 404 for an unknown or unowned booking; 409 for duplicate identities or invalid status transitions; 503 when the database or administrator configuration is unavailable. Unexpected errors return a generic 500 response without a stack trace or database details.
 
-- **The app reports a network, internet, or server error:** Confirm the backend is running and check `/api/health` from the device. Verify that the configured URL uses port 3000 and ends in `/api/`.
-- **Registration or login fails:** Check backend output and confirm `JWT_SECRET` is set in `backend/.env`. Registration requires a valid name, email, 10–15 digit mobile number (optionally prefixed with `+`), and a password of at least eight characters. An email or mobile number already in use cannot be registered again.
-- **The emulator works but a physical device does not:** Replace the emulator host with the computer's active LAN IPv4 address. Ensure both devices are on the same reachable Wi-Fi network and test the phone's browser against `/api/health`.
-- **The API base URL is incorrect:** Update `BASE_URL` in `ApiClient.kt`, including `http://`, port `3000`, and `/api/`. Rebuild/reinstall the app after changing the source.
-- **The backend is not running:** From `backend/`, run `npm start`; keep the process open. If dependencies are missing, run `npm install` first.
-- **Windows Firewall blocks port 3000:** Allow Node.js or inbound TCP traffic on port 3000 for the private network profile, following local machine policy.
-- **The computer's IP address changes:** Run `ipconfig` again and update `BASE_URL` in `ApiClient.kt` to the active adapter's current IPv4 address.
+### Administrator status demonstration
 
-## 16. Assignment Scope and Known Limitations
+New bookings start as `Pending`. Using Postman, send `PATCH https://<service>.onrender.com/api/admin/bookings/<full-booking-uuid>/status` with JSON `{ "status": "Confirmed" }` and header `x-admin-api-key` set to the private Render `ADMIN_API_KEY`. Send the same request with `{ "status": "Completed" }` to complete the allowed transition. The Android app never contains this key; refresh the booking screen to fetch the updated status.
 
-- Android is implemented using Kotlin and XML. iOS is not implemented; the proposed iOS client would use Swift and SwiftUI.
-- The backend uses a local JSON data store for the assignment demonstration. Public backend deployment is not included.
-- Cleartext HTTP is for local development only. Production use requires HTTPS, managed database storage, and proper administrator authentication and authorization.
-- Automated UI/instrumentation test coverage and published Play Store or iOS releases are not included.
-- A debug APK is suitable for demonstration and testing, not production distribution.
+## Authentication and Security
 
-## 17. Notes for Evaluators
+- Passwords are hashed with bcrypt before storage.
+- JWTs contain the existing UUID user ID as their subject. Booking operations enforce that ownership.
+- The Android app stores its session token using AES-GCM with a key held in Android Keystore.
+- MongoDB access uses a dedicated database user with `readWrite` access to `ecosphere_db` only.
+- Keep Atlas credentials, `JWT_SECRET`, and `ADMIN_API_KEY` in local ignored `.env` and Render secret environment variables.
+- Restrict Atlas Network Access to the developer's current IP and the Render service's actual outbound ranges. Never commit credentials or allow unrestricted network access permanently.
+- Render terminates HTTPS for its public web services. The app's production API URL should use HTTPS.
 
-- Run the backend and set its two local environment values before registering or signing in.
-- Use `10.0.2.2` for the standard Android Studio emulator. For a physical device, use a reachable computer LAN IP and verify `/api/health` from the phone.
-- The app's API URL is a source constant, so an APK must be built with a URL reachable from the evaluator's network. A private development LAN address cannot serve unrelated networks.
-- Use the operator status procedure above to demonstrate Confirmed and Completed states; refresh the app to fetch the changes.
-- Local Android Room data remains on the device, while backend demo data is stored separately in `backend/data/store.json`.
+## Troubleshooting
+
+- **MongoDB authentication failed:** Verify the Atlas database username/password, URL-encode reserved characters in the URI, and confirm the database user has `readWrite` on `ecosphere_db`.
+- **IP not allowed / connection timeout:** Verify the current development IP or all outbound CIDRs shown under the Render service's **Connect → Outbound** are in Atlas Network Access. Do not use `0.0.0.0/0` as a permanent fix.
+- **Wrong database or missing `MONGODB_URI`:** Ensure the URI path names `ecosphere_db`, and set `MONGODB_URI` in local `.env` or Render Environment settings. `MONGO_URI` is only a backwards-compatible local alias.
+- **Render build failure:** Confirm `backend/package-lock.json` is committed and the build command is `npm ci` with the service root set to `backend`.
+- **Render startup failure:** Check that `MONGODB_URI` and `JWT_SECRET` are configured, then inspect sanitized runtime errors and Atlas IP access.
+- **Admin endpoint returns 503:** Configure `ADMIN_API_KEY` in the backend environment. Never place it in Android source.
+- **Duplicate key or validation response:** Check unique email/mobile/UUID constraints and required booking fields/categories.
+- **Invalid ObjectId:** Public API IDs are UUID strings; do not replace them with MongoDB `_id` values.
+- **Android network error:** Confirm `ApiClient.kt` points to the deployed HTTPS `/api/` URL and rebuild the APK after changing it.
+
+## Assignment Scope and Known Limitations
+
+- Android is implemented using Kotlin/XML. iOS is not implemented; it could be developed using Swift and SwiftUI.
+- Android Room provides device-local booking cache; MongoDB Atlas is the persistent shared backend store.
+- Automated UI/instrumentation tests and Play Store/iOS releases are not included. Backend model tests and an Atlas-backed smoke test are available.
+- Render free services may have cold starts or plan limitations; allow the first request after inactivity extra time.
+- MongoDB Atlas backup/retention configuration depends on the existing cluster tier and settings and has not been assumed by this project.
+- The generated debug APK is for assignment demonstration and testing, not Play Store release.
+
+## Change Log
+
+- Replaced backend JSON-file/runtime-array operations with Mongoose models and MongoDB queries while retaining existing API endpoints and UUID response fields.
+- Added safe MongoDB startup, readiness/liveness health routes, graceful shutdown, and sanitized database error responses.
+- Added an idempotent importer for legacy local JSON records; it skips existing records and does not overwrite Atlas data.
+- Added backend model tests and a local Atlas-backed smoke test that checks API behavior and persistence after a service restart.
+- Added `.env.example` MongoDB configuration and a Render Blueprint with secret placeholders only.
+- Updated this README with the database schema, Atlas network setup, API reference, Render steps, and troubleshooting guide.
+
+## Repository Structure
+
+```text
+app/src/main/java/com/ecosphere/wastepickup/   Android features, MVVM, Room, API client
+backend/server.js                              Express API and startup
+backend/config/database.js                    MongoDB connection
+backend/models/                                User and booking schemas
+backend/scripts/                               Safe legacy importer and smoke test
+backend/test/                                  Backend model tests
+render.yaml                                   Render Web Service Blueprint
+docs/screenshots/                              Android screen images
+```
